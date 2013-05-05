@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="fb-root"></div>
+<script type="text/javascript" src="javascript/jquery-1.9.1.min.js"></script>
+<script>
+  window.fbAsyncInit = function() {
+    // init the FB JS SDK
+    FB.init({
+      appId      : '222131871245405', // App ID from the App Dashboard
+      channelUrl : '//localhost:8080/friendZone/channel.html', // Channel File for x-domain communication
+      status     : true, // check the login status upon init?
+      cookie     : true, // set sessions cookies to allow your server to access the session?
+      xfbml      : true  // parse XFBML tags on this page?
+    });
+
+   FB.getLoginStatus(function(response) {
+  if (response.status === 'connected') {
+    // connected
+	testAPI();
+  } else if (response.status === 'not_authorized') {
+	  alert(" not_authorized!");
+    // not_authorized
+    login();
+  } else {
+	alert("not_logged_in!");
+    // not_logged_in
+    login();
+  }
+ });
+
+  };
+  
+  function login() {
+    FB.login(function(response) {
+        if (response.authResponse) {
+            // connected
+        	testAPI();
+        } else {
+            // cancelled
+        }
+    }, {scope: 'email,publish_stream,offline_access,friends_birthday,friends_location,friends_photos,friends_about_me,read_friendlists,friends_hometown,user_location,user_hometown,user_website,user_birthday,user_groups,friends_groups,user_online_presence,read_friendlists, manage_friendlists, user_relationships'});
+}
+
+function testAPI() {
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+        console.log('Good to see you, ' + response.name + '.');
+    });
+    FB.api('/me/friends', function(response) {
+        if(response.data) {
+            $.each(response.data,function(index,friend) {
+            	console.log(friend.name + ' type:' + friend.list_type +' has id:' + friend.id);
+            });
+        } else {
+        	console.log("Error getting friend list!");
+        }
+    });
+    loadFriends();
+}
+
+function getFriends() {
+    FB.api('/me/friends', function(response) {
+    	if(response.data) {
+            $.each(response.data,function(index,friend) {
+            	document.write(friend.name + ' has id:' + friend.id);
+            });
+        } else {
+        	document.write("Error getting friend list!");
+        }
+    });
+}
+
+//function to load friends
+function loadFriends()
+{
+    //get array of friends lists
+    FB.api('/me/friendlists', function(response) {
+        var divContainer=$('.facebook-friendlists');
+        for(i=0;i<response.data.length;i++)
+            {
+        	$(document.createElement("button")).html(response.data[i].id+' '+response.data[i].name)
+            .appendTo(divContainer);
+        	 
+            }
+    });
+    
+  //get array of  close friends lists
+  
+	var query1 = FB.Data.query('SELECT uid, name, pic from user where uid in ( SELECT uid FROM friendlist_member WHERE flid =261782180522761)');
+	 var divContainer=$('.facebook-closefriends');      	
+  	query1.wait(function(rows1)
+                    {
+        		 for(j=0;j<rows1.length;j++)
+                 {
+        			$(document.createElement("img")).attr({ src: rows1[j].pic, title: rows1[j].name }).appendTo(divContainer);
+                 }
+        			
+                    });
+  	
+  	
+  	var query2 = FB.Data.query('SELECT uid, name, pic from user where uid in ( SELECT uid FROM friendlist_member WHERE flid =263892666978379)');
+	 var divContainer=$('.facebook-acquaintances');      	
+ 	query2.wait(function(rows2)
+                   {
+       		 	for(j=0;j<rows2.length;j++)
+                {
+       			$(document.createElement("img")).attr({ src: rows2[j].pic, title: rows2[j].name }).appendTo(divContainer);
+                }
+       			
+                   });
+ 	
+ 	var query3 = FB.Data.query('SELECT uid, name, pic from user where uid in ( SELECT uid FROM friendlist_member WHERE flid =261782650522714)');
+	 var divContainer=$('.facebook-family');      	
+	query3.wait(function(rows3)
+                  {
+      			 for(j=0;j<rows3.length;j++)
+               {
+      			$(document.createElement("img")).attr({ src: rows3[j].pic, title: rows3[j].name }).appendTo(divContainer);
+               }
+      			
+                  });
+  
+   	  
+    
+    
+    
+    //get array of friends
+    FB.api('/me/friends', function(response) {
+        var divContainer=$('.facebook-friends');
+        for(i=0;i<response.data.length;i++)
+            {
+        	 $(document.createElement("img")).attr({ src: 'https://graph.facebook.com/'+response.data[i].id+'/picture', title: response.data[i].name })
+             .appendTo(divContainer);
+            }
+    });
+}
+
+//Load the SDK Asynchronously
+(function(d){
+   var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+   if (d.getElementById(id)) {return;}
+   js = d.createElement('script'); js.id = id; js.async = true;
+   js.src = "//connect.facebook.net/en_US/all.js";
+   ref.parentNode.insertBefore(js, ref);
+ }(document));
+
+ 
+</script>
+
+<h1>Friend Zone</h1>
+<p> Friends lists</p>
+
+<div class="facebook-friendlists">
+
+</div>
+<p> Close Friends </p>
+<div class="facebook-closefriends">
+
+</div>
+
+<p> Acquaintances </p>
+<div class="facebook-acquaintances">
+
+</div>
+
+<p> Family </p>
+<div class="facebook-family">
+
+</div>
+
+<p> All Friends</p>
+<div class="facebook-friends">
+
+</div>
+
+</body>
+
+</html>
