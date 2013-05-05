@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Tilt</title>
+
+    <script type="application/x-javascript" src="../bin/Tilt-engine.js"></script>
+	<script type="application/x-javascript" src="../bin/Tilt-extension.js"></script>
+    <script type="text/javascript">
+      function init() {
+
+        var canvas, tilt;
+
+        function setup() {
+          canvas = Tilt.Document.initFullScreenCanvas();
+          tilt = new Tilt.Renderer(canvas);
+        }
+
+        function draw() {
+          tilt.loop(draw);
+
+          tilt.clear(0, 0, 0, 1);
+
+          tilt.translate(tilt.width / 2, tilt.height / 2, 0);
+          tilt.rotateX(tilt.elapsedTime / 500);
+          tilt.rotateY(tilt.elapsedTime / 500);
+          tilt.rotateZ(tilt.elapsedTime / 500);
+          tilt.scale(2, 2, 2);
+          tilt.fill("#f00");
+          tilt.stroke("#fff");
+          tilt.strokeWeight(3);
+          tilt.box(100, 100, 100);
+        }
+
+        setup();
+        draw();
+      }
+    </script>
+  </head>
+ 
+<body onload="init()">
+<CENTER>
+<H1>A Simple Sample Web Page</H1>
+
+
+ 
+
+<H1>This is a size "1" heading</H1>
+
+<H2>This is a size "2" heading</H2>
+
+<H3>This is a size "3" heading</H3>
+
+<H4>This is a size "4" heading</H4>
+
+<H5>This is a size "5" heading</H5>
+
+<H6>This is a size "6" heading</H6>
+
+</center>
+
+
+
+</body>
+</html>
